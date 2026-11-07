@@ -26,3 +26,5 @@ htmlcov/
 *.log
 first-run-backup.json
 .DS_Store
+captures/
+*.pcap
