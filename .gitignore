@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Large compiled binaries (distributed via GitHub Releases)
+dist/
+release/
+*.exe
+*.AppImage
+
+# Testing & caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# User data & backups
+*.log
+first-run-backup.json
+.DS_Store

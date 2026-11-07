@@ -1,0 +1,45 @@
+# Build from the repo root:  cd packaging/linux && makepkg -si
+# Dependencies marked (AUR) need an AUR helper such as yay or paru.
+pkgname=hive65
+pkgver=0.3.0
+pkgrel=1
+pkgdesc="Open-source driver, Studio app, effects and notifications for the Kreo Hive 65 keyboard"
+arch=('any')
+license=('MIT')
+depends=('python' 'python-numpy' 'python-hidapi' 'python-evdev' 'python-psutil'
+         'python-pillow' 'pyside6' 'python-qtawesome' 'python-gobject' 'gst-plugin-pipewire'
+         'xdg-desktop-portal-hyprland' 'grim' 'wireplumber'
+         'python-soundcard' 'python-dbus-next' 'python-mss')   # last three: AUR
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=()
+
+build() {
+    cd "$startdir/../.."
+    python -m build --wheel --no-isolation --outdir "$srcdir/dist"
+}
+
+package() {
+    python -m installer --destdir="$pkgdir" "$srcdir"/dist/*.whl
+    install -Dm644 "$startdir/70-hive65.rules" "$pkgdir/usr/lib/udev/rules.d/70-hive65.rules"
+    install -Dm644 /dev/stdin "$pkgdir/usr/share/applications/hive65-studio.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=Hive65 Studio
+Exec=/usr/bin/hive65-studio
+Icon=input-keyboard
+Categories=Settings;HardwareSettings;
+EOF
+    install -Dm644 /dev/stdin "$pkgdir/usr/lib/systemd/user/hive65.service" <<EOF
+[Unit]
+Description=hive65 effects and notifications (headless)
+After=graphical-session.target pipewire.service
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/hive65 serve
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target
+EOF
+}
